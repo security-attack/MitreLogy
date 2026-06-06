@@ -150,10 +150,6 @@ The app parses tactics, techniques, and sub-techniques locally — no outbound c
 ---
 
 ## Security notes
-
-- Sessions expire after **24 hours**
-- Cookies are `HttpOnly` + `SameSite=Strict`
-- Never commit `.env` or production passwords to git
 - Run behind HTTPS if exposed beyond localhost
 
 ---
