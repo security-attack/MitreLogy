@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Login — NINJAS MITRE Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@600;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root,[data-theme="dark"]{
+  --bg:#0a1628;--surface:#132238;--surface2:#1a2d4a;--border:#2a4060;
+  --text:#e8eef6;--muted:#7a8fa8;--mitre-blue:#105ba6;--mitre-navy:#0b3d6b;
+  --accent:#4a9eff;--error:#f85149;
+}
+[data-theme="light"]{
+  --bg:#eceff3;--surface:#fff;--surface2:#f6f8fa;--border:#c8d0da;
+  --text:#1a2332;--muted:#5c6b7a;--mitre-blue:#0056b3;--mitre-navy:#024;
+  --accent:#0056b3;--error:#cf222e;
+}
+body{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:var(--bg);color:var(--text);
+  font-family:'Source Sans 3',sans-serif;padding:20px;
+  background-image:radial-gradient(ellipse at 20% 0%,rgba(16,91,166,.18),transparent 55%),
+                   radial-gradient(ellipse at 80% 100%,rgba(11,61,107,.15),transparent 50%);
+}
+.card{
+  width:100%;max-width:400px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.25);
+}
+.head{
+  background:linear-gradient(180deg,var(--mitre-navy),var(--mitre-blue));
+  padding:28px 28px 24px;text-align:center;color:#fff;
+}
+.head h1{
+  font-family:'Roboto Condensed',sans-serif;font-size:22px;font-weight:700;
+  letter-spacing:.3px;
+}
+.head p{font-size:12px;opacity:.75;margin-top:6px}
+.body{padding:28px}
+.fg{margin-bottom:16px}
+label{
+  display:block;font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.4px;color:var(--muted);margin-bottom:6px;
+  font-family:'Roboto Condensed',sans-serif;
+}
+input{
+  width:100%;padding:10px 12px;border-radius:4px;
+  border:1px solid var(--border);background:var(--surface2);
+  color:var(--text);font-size:14px;font-family:inherit;outline:none;
+  transition:border-color .2s;
+}
+input:focus{border-color:var(--accent)}
+.err{
+  background:rgba(248,81,73,.12);border:1px solid var(--error);
+  color:var(--error);border-radius:4px;padding:9px 12px;
+  font-size:12px;margin-bottom:14px;display:none;
+}
+.err.show{display:block}
+.btn{
+  width:100%;padding:11px;border:none;border-radius:4px;cursor:pointer;
+  background:var(--mitre-blue);color:#fff;font-size:14px;font-weight:700;
+  font-family:'Roboto Condensed',sans-serif;letter-spacing:.3px;
+  transition:background .15s,transform .1s;
+}
+.btn:hover{background:var(--accent)}
+.btn:active{transform:scale(.99)}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.foot{
+  padding:14px 28px 20px;text-align:center;
+  font-size:11px;color:var(--muted);border-top:1px solid var(--border);
+}
+.theme-toggle{
+  position:fixed;top:16px;right:16px;
+  width:36px;height:36px;border-radius:50%;border:1px solid var(--border);
+  background:var(--surface);color:var(--text);cursor:pointer;font-size:16px;
+}
+</style>
+</head>
+<body>
+<button class="theme-toggle" id="themeBtn" type="button" title="Toggle theme">🌙</button>
+
+<div class="card">
+  <div class="head">
+    <h1>NINJAS</h1>
+    <p>MITRE ATT&CK Operations Board</p>
+  </div>
+  <form class="body" id="loginForm">
+    <div class="err" id="errMsg"></div>
+    <div class="fg">
+      <label for="username">Username</label>
+      <input id="username" name="username" type="text" autocomplete="username" required autofocus/>
+    </div>
+    <div class="fg">
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required/>
+    </div>
+    <button class="btn" type="submit" id="submitBtn">Sign In</button>
+  </form>
+  <div class="foot">Authorized personnel only</div>
+</div>
+
+<script>
+(function initTheme() {
+  const saved = localStorage.getItem('mitre-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  document.getElementById('themeBtn').textContent = saved === 'dark' ? '☀️' : '🌙';
+})();
+document.getElementById('themeBtn').onclick = () => {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('mitre-theme', next);
+  document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️' : '🌙';
+};
+
+fetch('/api/auth/me').then(r => { if (r.ok) location.href = '/'; }).catch(() => {});
+
+document.getElementById('loginForm').onsubmit = async e => {
+  e.preventDefault();
+  const err = document.getElementById('errMsg');
+  const btn = document.getElementById('submitBtn');
+  err.classList.remove('show');
+  btn.disabled = true;
+  btn.textContent = 'Signing in…';
+  try {
+    const r = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        username: document.getElementById('username').value.trim(),
+        password: document.getElementById('password').value
+      })
+    });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(data.error || 'Login failed');
+    location.href = '/';
+  } catch (ex) {
+    err.textContent = ex.message;
+    err.classList.add('show');
+    btn.disabled = false;
+    btn.textContent = 'Sign In';
+  }
+};
+</script>
+</body>
+</html>

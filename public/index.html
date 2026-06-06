@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>NINJAS MITRE ATT&CK Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ── Theme tokens ─────────────────────────────────────── */
+:root,[data-theme="dark"]{
+  --mitre-navy:#0b3d6b;
+  --mitre-blue:#105ba6;
+  --mitre-accent:#4a9eff;
+  --bg:#0a1628;
+  --bg2:#0f1f35;
+  --surface:#132238;
+  --surface2:#1a2d4a;
+  --surface3:#223552;
+  --border:#2a4060;
+  --border2:#3a5578;
+  --text:#e8eef6;
+  --text2:#b8c5d6;
+  --muted:#7a8fa8;
+  --header-bg:linear-gradient(180deg,#0b3d6b 0%,#0a3258 100%);
+  --col-head-bg:linear-gradient(180deg,#105ba6 0%,#0b4a8a 100%);
+  --col-head-text:#fff;
+  --cell-bg:#1a2d4a;
+  --cell-hover:#223552;
+  --matrix-bg:#0a1628;
+  --shadow:0 2px 8px rgba(0,0,0,.35);
+  --shadow-lg:0 8px 28px rgba(0,0,0,.45);
+  --drawer-w:500px;
+  --blocked:#2ea043;
+  --blocked-bg:rgba(46,160,67,.22);
+  --blocked-border:#3fb950;
+  --detected:#388bfd;
+  --detected-bg:rgba(56,139,253,.22);
+  --detected-border:#58a6ff;
+  --tested:#bc4c00;
+  --tested-bg:rgba(188,76,0,.25);
+  --tested-border:#f0883e;
+  --missed:#da3633;
+  --missed-bg:rgba(218,54,51,.22);
+  --missed-border:#f85149;
+  --inprogress:#bb8009;
+  --inprogress-bg:rgba(187,128,9,.25);
+  --inprogress-border:#d29922;
+  --none-bg:var(--cell-bg);
+  --none-border:var(--border);
+  --noted-ring:#ffd33d;
+  --backdrop:rgba(0,0,0,.55);
+}
+
+[data-theme="light"]{
+  --mitre-navy:#024;
+  --mitre-blue:#0056b3;
+  --mitre-accent:#0056b3;
+  --bg:#eceff3;
+  --bg2:#e2e6eb;
+  --surface:#fff;
+  --surface2:#f6f8fa;
+  --surface3:#eef1f5;
+  --border:#c8d0da;
+  --border2:#aab4c0;
+  --text:#1a2332;
+  --text2:#3d4f63;
+  --muted:#5c6b7a;
+  --header-bg:linear-gradient(180deg,#024 0%,#003366 100%);
+  --col-head-bg:linear-gradient(180deg,#0056b3 0%,#004494 100%);
+  --col-head-text:#fff;
+  --cell-bg:#fff;
+  --cell-hover:#f0f4f8;
+  --matrix-bg:#d8dee6;
+  --shadow:0 1px 4px rgba(0,0,0,.08);
+  --shadow-lg:0 8px 24px rgba(0,0,0,.12);
+  --blocked:#1a7f37;
+  --blocked-bg:rgba(26,127,55,.14);
+  --blocked-border:#2da44e;
+  --detected:#0969da;
+  --detected-bg:rgba(9,105,218,.12);
+  --detected-border:#218bff;
+  --tested:#bc4c00;
+  --tested-bg:rgba(188,76,0,.12);
+  --tested-border:#e16f24;
+  --missed:#cf222e;
+  --missed-bg:rgba(207,34,46,.12);
+  --missed-border:#ff6b6b;
+  --inprogress:#9a6700;
+  --inprogress-bg:rgba(154,103,0,.14);
+  --inprogress-border:#bf8700;
+  --none-bg:var(--cell-bg);
+  --none-border:var(--border);
+  --noted-ring:#bf8700;
+  --backdrop:rgba(0,20,40,.35);
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Source Sans 3',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-size:13px;
+  overflow-x:hidden;
+  transition:background .25s,color .25s;
+}
+
+/* ── Header ───────────────────────────────────────────── */
+.header{
+  background:var(--header-bg);
+  border-bottom:2px solid var(--mitre-blue);
+  padding:10px 20px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  position:sticky;top:0;z-index:100;
+  box-shadow:var(--shadow);
+}
+.logo{
+  font-family:'Roboto Condensed',sans-serif;
+  font-size:18px;font-weight:700;
+  color:#fff;white-space:nowrap;
+  letter-spacing:.3px;
+}
+.logo span{color:#7ec8ff;font-weight:400;font-size:14px;margin-left:6px}
+.source-badge{
+  font-size:10px;padding:3px 9px;border-radius:10px;
+  border:1px solid rgba(255,255,255,.25);color:rgba(255,255,255,.75);white-space:nowrap;
+}
+.source-badge.github{border-color:#56d364;color:#aff5b4}
+.source-badge.local{border-color:#e3b341;color:#ffe066}
+.source-badge.fallback{border-color:#ff7b72;color:#ffb4ae}
+.search{
+  flex:1;max-width:320px;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:4px;padding:7px 12px;
+  color:#fff;font-size:13px;outline:none;
+}
+.search:focus{border-color:#7ec8ff;background:rgba(255,255,255,.15)}
+.search::placeholder{color:rgba(255,255,255,.5)}
+.actions{display:flex;gap:8px;margin-left:auto;align-items:center}
+.btn{
+  padding:6px 14px;border-radius:4px;
+  border:1px solid rgba(255,255,255,.25);
+  background:rgba(255,255,255,.08);color:#fff;
+  font-size:12px;cursor:pointer;transition:all .15s;
+  font-family:inherit;
+}
+.btn:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.45)}
+.btn-danger:hover{background:rgba(248,81,73,.25);border-color:#f85149}
+.btn-primary{background:#fff;border-color:#fff;color:var(--mitre-navy);font-weight:700}
+.btn-primary:hover{background:#e8f4ff;color:var(--mitre-navy)}
+.drawer .btn,.note-foot .btn{
+  border:1px solid var(--border);background:var(--surface2);color:var(--text);
+}
+.drawer .btn:hover,.note-foot .btn:hover{border-color:var(--mitre-accent);color:var(--mitre-accent);background:var(--surface3)}
+.drawer .btn-primary,.note-foot .btn-primary{
+  background:var(--mitre-blue);border-color:var(--mitre-blue);color:#fff;font-weight:700;
+}
+.drawer .btn-primary:hover,.note-foot .btn-primary:hover{background:var(--mitre-accent);border-color:var(--mitre-accent);color:#fff}
+.theme-btn{
+  width:36px;height:36px;padding:0;display:flex;align-items:center;justify-content:center;
+  font-size:16px;border-radius:50%;
+}
+
+/* ── Stats bar ────────────────────────────────────────── */
+.stats{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:8px 20px;
+  display:flex;gap:16px;flex-wrap:wrap;align-items:center;
+}
+.stat{display:flex;align-items:center;gap:6px;font-size:12px}
+.dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.stat-lbl{color:var(--muted)}
+.stat-val{font-weight:700;font-family:'Roboto Condensed',sans-serif;font-size:14px}
+.pbar{flex:1;min-width:180px;height:6px;background:var(--surface3);border-radius:2px;overflow:hidden;display:flex;border:1px solid var(--border)}
+.pseg{height:100%;transition:width .3s}
+.legend-hint{font-size:10px;color:var(--muted);font-style:italic}
+
+/* ── Filters ──────────────────────────────────────────── */
+.filters{
+  padding:8px 20px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;
+  border-bottom:1px solid var(--border);background:var(--surface2);
+}
+.flbl{color:var(--muted);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-right:4px}
+.fbtn{
+  padding:4px 11px;border-radius:3px;
+  border:1px solid var(--border);background:var(--surface);
+  color:var(--text2);font-size:11px;cursor:pointer;transition:all .15s;font-family:inherit;
+}
+.fbtn:hover{border-color:var(--mitre-accent);color:var(--text)}
+.fbtn.active{background:var(--mitre-blue);border-color:var(--mitre-blue);color:#fff;font-weight:600}
+
+/* ── MITRE Matrix ─────────────────────────────────────── */
+.matrix-wrap{
+  overflow-x:auto;padding:16px 20px 24px;
+  background:var(--matrix-bg);
+  transition:padding-right .3s;
+}
+.matrix-wrap.drawer-open{padding-right:calc(var(--drawer-w) + 20px)}
+.matrix{
+  display:grid;grid-auto-flow:column;gap:2px;
+  min-width:max-content;
+  border:1px solid var(--border2);
+  background:var(--border2);
+  box-shadow:var(--shadow-lg);
+}
+.col{width:168px;background:var(--matrix-bg)}
+.col-head{
+  padding:10px 8px;
+  background:var(--col-head-bg);
+  border-bottom:2px solid var(--mitre-navy);
+  min-height:52px;
+  display:flex;flex-direction:column;justify-content:center;
+}
+.col-name{
+  font-family:'Roboto Condensed',sans-serif;
+  font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.5px;
+  color:var(--col-head-text);line-height:1.25;
+}
+.col-cnt{font-size:10px;color:rgba(255,255,255,.65);margin-top:3px}
+.techniques{padding:2px;display:flex;flex-direction:column;gap:2px;min-height:40px}
+
+/* Technique cells — MITRE Navigator style */
+.card{
+  padding:6px 7px;
+  border:1px solid var(--none-border);
+  background:var(--none-bg);
+  cursor:pointer;
+  transition:transform .12s,box-shadow .12s,border-color .12s,background .12s;
+  min-height:46px;
+  position:relative;
+}
+.card:hover{
+  transform:translateY(-1px);
+  box-shadow:var(--shadow);
+  z-index:2;
+  border-color:var(--mitre-accent);
+}
+.card.active-card{
+  outline:2px solid var(--mitre-accent);
+  outline-offset:-1px;
+  z-index:3;
+}
+.card-id{
+  font-size:10px;color:var(--muted);
+  font-family:'Roboto Condensed',monospace;font-weight:600;
+  letter-spacing:.2px;
+}
+.card-name{
+  font-size:11px;font-weight:600;margin-top:2px;
+  line-height:1.25;color:var(--text);
+}
+.card-foot{display:flex;align-items:center;gap:4px;margin-top:4px;flex-wrap:wrap}
+
+/* Sub-techniques — indented like MITRE Navigator */
+.card.sub-tech{
+  margin-left:8px;
+  min-height:38px;
+  padding:4px 6px;
+  border-left-width:2px;
+  opacity:.95;
+}
+.card.sub-tech .card-id{font-size:9px}
+.card.sub-tech .card-name{font-size:10px;font-weight:500}
+.card.sub-tech::before{
+  content:'↳';
+  position:absolute;left:-10px;top:50%;transform:translateY(-50%);
+  font-size:9px;color:var(--muted);
+}
+
+/* Status fills — full cell tint like MITRE Navigator */
+.card.sl-tested{background:var(--tested-bg);border-color:var(--tested-border)}
+.card.sl-tested .card-id{color:var(--tested-border)}
+.card.sl-detected{background:var(--detected-bg);border-color:var(--detected-border)}
+.card.sl-detected .card-id{color:var(--detected-border)}
+.card.sl-blocked{background:var(--blocked-bg);border-color:var(--blocked-border)}
+.card.sl-blocked .card-id{color:var(--blocked-border)}
+.card.sl-missed{background:var(--missed-bg);border-color:var(--missed-border)}
+.card.sl-missed .card-id{color:var(--missed-border)}
+.card.sl-inprogress{background:var(--inprogress-bg);border-color:var(--inprogress-border)}
+.card.sl-inprogress .card-id{color:var(--inprogress-border)}
+
+/* Has notes — extra visual ring */
+.card.has-note::after{
+  content:'';
+  position:absolute;top:3px;right:3px;
+  width:7px;height:7px;border-radius:50%;
+  background:var(--noted-ring);
+  box-shadow:0 0 0 2px var(--cell-bg);
+}
+.card.has-note.sl-tested::after,
+.card.has-note.sl-detected::after,
+.card.has-note.sl-blocked::after,
+.card.has-note.sl-missed::after,
+.card.has-note.sl-inprogress::after{box-shadow:none}
+
+.badge{
+  font-size:8px;padding:1px 5px;border-radius:2px;
+  font-weight:700;text-transform:uppercase;letter-spacing:.35px;
+  font-family:'Roboto Condensed',sans-serif;
+}
+.b-none{display:none}
+.b-blocked{background:var(--blocked);color:#fff}
+.b-detected{background:var(--detected);color:#fff}
+.b-tested{background:var(--tested);color:#fff}
+.b-missed{background:var(--missed);color:#fff}
+.b-inprogress{background:var(--inprogress);color:#fff}
+.a-badge{
+  font-size:9px;background:var(--surface3);
+  border:1px solid var(--border);border-radius:2px;
+  padding:1px 5px;color:var(--text2);
+}
+
+/* ── Drawer ───────────────────────────────────────────── */
+.drawer-backdrop{
+  position:fixed;inset:0;background:var(--backdrop);z-index:150;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.drawer-backdrop.open{opacity:1;pointer-events:all}
+
+.drawer{
+  position:fixed;top:0;right:0;height:100vh;
+  width:var(--drawer-w);max-width:100vw;
+  background:var(--surface);
+  border-left:2px solid var(--mitre-blue);
+  z-index:160;display:flex;flex-direction:column;
+  transform:translateX(100%);
+  transition:transform .28s cubic-bezier(.4,0,.2,1);
+  box-shadow:var(--shadow-lg);
+}
+.drawer.open{transform:none}
+
+.dhead{
+  padding:14px 18px 12px;
+  background:var(--col-head-bg);
+  color:#fff;
+  display:flex;align-items:flex-start;gap:10px;flex-shrink:0;
+}
+.dhead-info{flex:1;min-width:0}
+.did{
+  font-size:12px;color:#a8d4ff;
+  font-family:'Roboto Condensed',monospace;font-weight:700;
+}
+.dname{font-size:16px;font-weight:700;margin-top:3px;line-height:1.3;font-family:'Roboto Condensed',sans-serif}
+.dtactic{font-size:11px;color:rgba(255,255,255,.7);margin-top:4px;text-transform:uppercase;letter-spacing:.4px}
+.dhead-actions{display:flex;gap:6px;align-items:flex-start;flex-shrink:0}
+.dclose{background:rgba(255,255,255,.1);border:none;color:#fff;font-size:20px;cursor:pointer;line-height:1;padding:4px 8px;border-radius:4px}
+.dclose:hover{background:rgba(255,255,255,.2)}
+.dlink{
+  font-size:11px;padding:5px 10px;border-radius:4px;
+  border:1px solid rgba(255,255,255,.35);
+  background:rgba(255,255,255,.1);color:#fff;text-decoration:none;
+  display:flex;align-items:center;gap:4px;transition:all .15s;white-space:nowrap;
+}
+.dlink:hover{background:rgba(255,255,255,.2)}
+
+.dbody{flex:1;overflow-y:auto;display:flex;flex-direction:column;background:var(--surface)}
+
+.dtabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--surface2)}
+.dtab{
+  flex:1;padding:10px 6px;text-align:center;
+  font-size:11px;font-weight:700;color:var(--muted);
+  cursor:pointer;border-bottom:3px solid transparent;
+  transition:all .15s;letter-spacing:.4px;text-transform:uppercase;
+  font-family:'Roboto Condensed',sans-serif;
+}
+.dtab:hover{color:var(--text)}
+.dtab.active{color:var(--mitre-accent);border-bottom-color:var(--mitre-accent);background:var(--surface)}
+
+.dpanel{display:none;flex-direction:column;gap:0;flex:1}
+.dpanel.active{display:flex}
+
+.detail-section{padding:14px 18px;border-bottom:1px solid var(--border)}
+.sec-label{
+  font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.5px;color:var(--muted);margin-bottom:8px;
+  font-family:'Roboto Condensed',sans-serif;
+}
+.desc-text{font-size:12px;line-height:1.75;color:var(--text2);white-space:pre-wrap}
+.platform-list{display:flex;flex-wrap:wrap;gap:5px}
+.platform-tag{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:3px;padding:3px 9px;font-size:11px;color:var(--text);
+}
+.sub-list{display:flex;flex-direction:column;gap:3px}
+.sub-item{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 10px;border-radius:3px;
+  background:var(--surface2);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;
+}
+.sub-item:hover{border-color:var(--mitre-accent);background:var(--surface3)}
+.sub-id{font-size:10px;color:var(--mitre-accent);font-family:'Roboto Condensed',monospace;white-space:nowrap;font-weight:600}
+.sub-name{font-size:11px;color:var(--text);flex:1}
+.sub-status{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.detail-loading{display:flex;align-items:center;justify-content:center;gap:10px;padding:40px 20px;color:var(--muted);font-size:12px}
+.spinner-sm{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--mitre-accent);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+
+/* ── Note panel ───────────────────────────────────────── */
+.note-panel{padding:16px 18px;display:flex;flex-direction:column;gap:14px;flex:1}
+.fg{display:flex;flex-direction:column;gap:6px}
+.flabel{
+  font-size:10px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.4px;
+  font-family:'Roboto Condensed',sans-serif;
+}
+.fhint{font-size:10px;color:var(--muted);margin-top:-2px}
+
+.spick{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.sopt{
+  padding:9px 6px;border-radius:4px;
+  border:1px solid var(--border);background:var(--surface2);
+  cursor:pointer;text-align:center;font-size:10px;font-weight:700;
+  transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:3px;
+  color:var(--text2);
+}
+.sopt:hover{border-color:var(--border2);background:var(--surface3)}
+.sopt.sel{border-width:2px;transform:scale(1.02)}
+.sopt .ico{font-size:16px}
+.sopt .sdesc{font-size:9px;font-weight:400;color:var(--muted);margin-top:1px}
+.sopt.sel.b-none{border-color:var(--border2);background:var(--surface3)}
+.sopt.sel.b-tested{border-color:var(--tested-border);background:var(--tested-bg);color:var(--tested-border)}
+.sopt.sel.b-detected{border-color:var(--detected-border);background:var(--detected-bg);color:var(--detected-border)}
+.sopt.sel.b-blocked{border-color:var(--blocked-border);background:var(--blocked-bg);color:var(--blocked-border)}
+.sopt.sel.b-missed{border-color:var(--missed-border);background:var(--missed-bg);color:var(--missed-border)}
+.sopt.sel.b-inprogress{border-color:var(--inprogress-border);background:var(--inprogress-bg);color:var(--inprogress-border)}
+
+.team-pick{display:flex;gap:6px}
+.team-opt{
+  flex:1;padding:8px;border-radius:4px;border:1px solid var(--border);
+  background:var(--surface2);cursor:pointer;text-align:center;
+  font-size:11px;font-weight:600;transition:all .15s;color:var(--text2);
+}
+.team-opt:hover{border-color:var(--border2)}
+.team-opt.sel{border-width:2px}
+.team-opt.sel[data-team="red"]{border-color:var(--tested-border);background:var(--tested-bg);color:var(--tested-border)}
+.team-opt.sel[data-team="purple"]{border-color:#8957e5;background:rgba(137,87,229,.15);color:#a371f7}
+.team-opt.sel[data-team="blue"]{border-color:var(--detected-border);background:var(--detected-bg);color:var(--detected-border)}
+
+input.fi,textarea.fi,select.fi{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:4px;padding:8px 11px;color:var(--text);
+  font-size:13px;font-family:inherit;outline:none;transition:border-color .2s;width:100%;
+}
+input.fi:focus,textarea.fi:focus,select.fi:focus{border-color:var(--mitre-accent)}
+input.fi::placeholder,textarea.fi::placeholder{color:var(--muted)}
+textarea.fi{resize:vertical;min-height:240px;line-height:1.65;font-size:13px}
+
+.tags-wrap{
+  display:flex;gap:5px;flex-wrap:wrap;align-items:center;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:4px;padding:5px 9px;min-height:36px;cursor:text;
+}
+.tags-wrap:focus-within{border-color:var(--mitre-accent)}
+.tag{
+  background:var(--surface3);border:1px solid var(--border);
+  border-radius:3px;padding:2px 7px;font-size:11px;
+  display:flex;align-items:center;gap:3px;color:var(--mitre-accent);font-weight:600;
+}
+.tag-x{cursor:pointer;opacity:.6;font-size:13px;line-height:1}
+.tag-x:hover{opacity:1}
+.tag-inp{border:none;background:transparent;outline:none;color:var(--text);font-size:12px;min-width:70px;flex:1}
+
+.meta-row{font-size:10px;color:var(--muted);padding:0 18px 8px;display:flex;gap:12px}
+.note-foot{
+  padding:12px 18px;border-top:1px solid var(--border);
+  display:flex;gap:8px;justify-content:space-between;align-items:center;flex-shrink:0;
+  background:var(--surface2);
+}
+.note-foot-hint{font-size:10px;color:var(--muted)}
+.note-foot-actions{display:flex;gap:8px}
+
+.toast{
+  position:fixed;bottom:20px;right:20px;
+  background:var(--surface);border:1px solid var(--border);
+  border-left:4px solid var(--mitre-blue);
+  border-radius:4px;padding:10px 16px;font-size:13px;z-index:999;
+  transform:translateY(50px);opacity:0;transition:all .3s;box-shadow:var(--shadow-lg);
+}
+.toast.show{transform:none;opacity:1}
+
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;height:200px;gap:12px;color:var(--muted);grid-column:1/-1;background:var(--surface);padding:40px}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--mitre-accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">NINJAS<span>MITRE ATT&CK</span></div>
+  <span class="source-badge hidden" id="sourceBadge"></span>
+  <input class="search" id="searchInput" type="text" placeholder="Search techniques (T1059, PowerShell…)"/>
+  <div class="actions">
+    <span class="source-badge" id="userBadge" style="border-color:rgba(255,255,255,.3);color:rgba(255,255,255,.85)"></span>
+    <button class="btn theme-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle light/dark theme">🌙</button>
+    <button class="btn" onclick="exportJSON()">⬇ Export</button>
+    <button class="btn btn-danger" onclick="clearAll()">✕ Clear All</button>
+    <button class="btn" onclick="logout()" title="Sign out">⏻ Logout</button>
+  </div>
+</header>
+
+<div class="stats" id="stats">
+  <div class="stat"><div class="dot" style="background:var(--tested)"></div><span class="stat-lbl">Tested</span><span class="stat-val" id="n-tested">0</span></div>
+  <div class="stat"><div class="dot" style="background:var(--detected)"></div><span class="stat-lbl">Detected</span><span class="stat-val" id="n-detected">0</span></div>
+  <div class="stat"><div class="dot" style="background:var(--blocked)"></div><span class="stat-lbl">Blocked</span><span class="stat-val" id="n-blocked">0</span></div>
+  <div class="stat"><div class="dot" style="background:var(--missed)"></div><span class="stat-lbl">Missed</span><span class="stat-val" id="n-missed">0</span></div>
+  <div class="stat"><div class="dot" style="background:var(--inprogress)"></div><span class="stat-lbl">In Progress</span><span class="stat-val" id="n-inprogress">0</span></div>
+  <div class="pbar" id="pbar"></div>
+  <span id="ppct" style="font-size:11px;color:var(--muted);font-weight:600"></span>
+  <span class="legend-hint" id="ttpTotal">Loading TTPs…</span>
+</div>
+
+<div class="filters">
+  <span class="flbl">Filter:</span>
+  <button class="fbtn active" onclick="setFilter('all',this)">All</button>
+  <button class="fbtn" onclick="setFilter('none',this)">Unset</button>
+  <button class="fbtn" onclick="setFilter('tested',this)">Tested</button>
+  <button class="fbtn" onclick="setFilter('detected',this)">Detected</button>
+  <button class="fbtn" onclick="setFilter('blocked',this)">Blocked</button>
+  <button class="fbtn" onclick="setFilter('missed',this)">Missed</button>
+  <button class="fbtn" onclick="setFilter('inprogress',this)">In Progress</button>
+  <button class="fbtn" onclick="setFilter('noted',this)">Has Note</button>
+</div>
+
+<div class="matrix-wrap" id="matrixWrap">
+  <div class="matrix" id="matrix">
+    <div class="loading">
+      <div class="spinner"></div>
+      <span>Loading MITRE ATT&CK data…</span>
+    </div>
+  </div>
+</div>
+
+<div class="drawer-backdrop" id="drawerBackdrop" onclick="closeDrawer()"></div>
+
+<div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Technique detail">
+  <div class="dhead">
+    <div class="dhead-info">
+      <div class="did" id="dId"></div>
+      <div class="dname" id="dName"></div>
+      <div class="dtactic" id="dTactic"></div>
+    </div>
+    <div class="dhead-actions">
+      <a class="dlink hidden" id="dLink" href="#" target="_blank" rel="noopener">↗ MITRE</a>
+      <button class="dclose" onclick="closeDrawer()" aria-label="Close">×</button>
+    </div>
+  </div>
+
+  <div class="dtabs">
+    <div class="dtab active" data-tab="detail" onclick="switchTab('detail',this)">Detail</div>
+    <div class="dtab" data-tab="note" onclick="switchTab('note',this)">Operations Note</div>
+  </div>
+
+  <div class="dbody">
+    <div class="dpanel active" id="panel-detail">
+      <div id="detailContent">
+        <div class="detail-loading"><div class="spinner-sm"></div> Loading…</div>
+      </div>
+    </div>
+
+    <div class="dpanel" id="panel-note">
+      <div class="note-panel">
+        <div class="fg">
+          <div class="flabel">Operation Status</div>
+          <div class="fhint">Track what your Red/Purple team did against this TTP</div>
+          <div class="spick">
+            <div class="sopt b-none"       data-s="none"       onclick="pickStatus('none')"><span class="ico">○</span>None<span class="sdesc">Not assessed</span></div>
+            <div class="sopt b-tested"     data-s="tested"     onclick="pickStatus('tested')"><span class="ico">🎯</span>Tested<span class="sdesc">Red executed</span></div>
+            <div class="sopt b-detected"   data-s="detected"   onclick="pickStatus('detected')"><span class="ico">👁</span>Detected<span class="sdesc">Blue saw it</span></div>
+            <div class="sopt b-blocked"    data-s="blocked"    onclick="pickStatus('blocked')"><span class="ico">🛡</span>Blocked<span class="sdesc">Prevented</span></div>
+            <div class="sopt b-missed"     data-s="missed"     onclick="pickStatus('missed')"><span class="ico">⚠</span>Missed<span class="sdesc">Gap found</span></div>
+            <div class="sopt b-inprogress" data-s="inprogress" onclick="pickStatus('inprogress')"><span class="ico">⏳</span>In Progress<span class="sdesc">Ongoing</span></div>
+          </div>
+        </div>
+        <div class="fg">
+          <div class="flabel">Team Perspective</div>
+          <div class="team-pick">
+            <div class="team-opt" data-team="red" onclick="pickTeam('red')">🔴 Red</div>
+            <div class="team-opt" data-team="purple" onclick="pickTeam('purple')">🟣 Purple</div>
+            <div class="team-opt" data-team="blue" onclick="pickTeam('blue')">🔵 Blue</div>
+          </div>
+        </div>
+        <div class="fg">
+          <div class="flabel">Operator / Assignee</div>
+          <input class="fi" id="assignee" type="text" placeholder="Who ran or validated this TTP…"/>
+        </div>
+        <div class="fg">
+          <div class="flabel">Tags</div>
+          <div class="tags-wrap" onclick="document.getElementById('tagInp').focus()">
+            <div id="tagsList" style="display:contents"></div>
+            <input class="tag-inp" id="tagInp" placeholder="tool, CVE, campaign + Enter" onkeydown="tagKey(event)"/>
+          </div>
+        </div>
+        <div class="fg" style="flex:1">
+          <div class="flabel">Operational Notes</div>
+          <textarea class="fi" id="noteText" placeholder="Commands run, payloads, detection rules, SIEM queries, evidence links, timestamps…"></textarea>
+        </div>
+      </div>
+      <div id="noteMeta" class="meta-row hidden"></div>
+      <div class="note-foot">
+        <span class="note-foot-hint">Ctrl+S to save · Esc to close</span>
+        <div class="note-foot-actions">
+          <button class="btn" onclick="closeDrawer()">Cancel</button>
+          <button class="btn btn-primary" onclick="saveNote()">Save Note</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let TACTICS = [];
+let notes = {}, currentTech = null, currentTacName = '', currentFilter = 'all', currentTags = [], currentTeam = '';
+let uniqueTTPs = new Set();
+
+function collectUniqueTTPs() {
+  uniqueTTPs = new Set();
+  TACTICS.forEach(tac => tac.techniques.forEach(t => uniqueTTPs.add(t.id)));
+  return uniqueTTPs;
+}
+
+const STATUS_COLORS = {
+  blocked:'var(--blocked)', detected:'var(--detected)', tested:'var(--tested)',
+  missed:'var(--missed)', inprogress:'var(--inprogress)'
+};
+
+async function apiFetch(url, opts) {
+  const r = await fetch(url, opts);
+  if (r.status === 401) { location.href = '/login'; throw new Error('Unauthorized'); }
+  return r;
+}
+
+async function logout() {
+  await fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
+  location.href = '/login';
+}
+
+// ── Theme ─────────────────────────────────────────────────────────────
+function initTheme() {
+  const saved = localStorage.getItem('mitre-theme') || 'dark';
+  applyTheme(saved);
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  document.getElementById('themeBtn').textContent = theme === 'dark' ? '☀️' : '🌙';
+  document.getElementById('themeBtn').title = theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme';
+  localStorage.setItem('mitre-theme', theme);
+}
+
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme');
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────
+async function boot() {
+  initTheme();
+  try {
+    const me = await (await apiFetch('/api/auth/me')).json();
+    document.getElementById('userBadge').textContent = '👤 ' + me.username;
+  } catch { return; }
+  await Promise.all([loadMitre(), loadNotes()]);
+  renderMatrix();
+  updateStats();
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeDrawer();
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); if (currentTech) saveNote(); }
+  });
+}
+
+async function loadMitre() {
+  try {
+    const r = await apiFetch('/api/mitre');
+    const json = await r.json();
+    TACTICS = json.data;
+    collectUniqueTTPs();
+    setSourceBadge(json.source);
+  } catch {
+    setSourceBadge('error');
+    TACTICS = [];
+  }
+}
+
+function setSourceBadge(source) {
+  const el = document.getElementById('sourceBadge');
+  el.classList.remove('hidden','github','local','fallback');
+  const labels = { github:'● Live MITRE', local:'● Local MITRE', fallback:'⚠ Fallback', error:'✕ Unavailable' };
+  el.textContent = labels[source] || source;
+  el.classList.add(source === 'error' ? 'fallback' : source);
+  el.classList.remove('hidden');
+}
+
+async function loadNotes() {
+  try { notes = await (await apiFetch('/api/notes')).json(); }
+  catch { notes = {}; }
+}
+
+async function saveNoteToServer(id, data) {
+  await apiFetch(`/api/notes/${id}`, {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(data)
+  });
+}
+
+// ── Matrix ────────────────────────────────────────────────────────────
+function renderMatrix() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const matrix = document.getElementById('matrix');
+  matrix.innerHTML = '';
+
+  if (!TACTICS.length) {
+    matrix.innerHTML = '<div class="loading"><span>No data available — place enterprise-attack.json in data/</span></div>';
+    return;
+  }
+
+  TACTICS.forEach(tac => {
+    const techs = tac.techniques.filter(t => {
+      if (q && !t.name.toLowerCase().includes(q) && !t.id.toLowerCase().includes(q)) return false;
+      const n = notes[t.id];
+      const s = n?.status || 'none';
+      if (currentFilter === 'all') return true;
+      if (currentFilter === 'noted') return n?.notes?.trim();
+      if (currentFilter === 'none') return s === 'none';
+      return s === currentFilter;
+    });
+    if (q && !techs.length) return;
+
+    const col = document.createElement('div');
+    col.className = 'col';
+    col.innerHTML = `
+      <div class="col-head">
+        <div class="col-name">${tac.name}</div>
+        <div class="col-cnt">${techs.length} technique${techs.length !== 1 ? 's' : ''}</div>
+      </div>
+      <div class="techniques" id="col-${tac.id}"></div>`;
+    matrix.appendChild(col);
+
+    const wrap = col.querySelector(`#col-${tac.id}`);
+    techs.forEach(t => wrap.appendChild(makeCard(t, tac.name)));
+  });
+
+  if (currentTech) highlightCard(currentTech.id);
+}
+
+function makeCard(t, tacName) {
+  const n = notes[t.id] || {};
+  const s = n.status || 'none';
+  const hasNote = !!(n.notes?.trim());
+  const div = document.createElement('div');
+  div.className = `card sl-${s}${hasNote ? ' has-note' : ''}${t.isSub ? ' sub-tech' : ''}`;
+  div.dataset.id = t.id;
+  div.title = buildCardTooltip(n, t);
+  div.onclick = () => openDrawer(t, tacName);
+  div.innerHTML = `
+    <div class="card-id">${t.id}${t.isSub ? '' : ''}</div>
+    <div class="card-name">${escHtml(t.name)}</div>
+    <div class="card-foot">
+      ${s !== 'none' ? `<span class="badge b-${s}">${s}</span>` : ''}
+      ${n.team ? `<span class="a-badge">${teamIcon(n.team)} ${n.team}</span>` : ''}
+      ${n.assignee ? `<span class="a-badge">👤 ${escHtml(n.assignee)}</span>` : ''}
+    </div>`;
+  return div;
+}
+
+function buildCardTooltip(n, t) {
+  const parts = [];
+  if (t?.isSub) parts.push('Sub-technique');
+  if (n.status && n.status !== 'none') parts.push(`Status: ${n.status}`);
+  if (n.team) parts.push(`Team: ${n.team}`);
+  if (n.assignee) parts.push(`Operator: ${n.assignee}`);
+  if (n.notes?.trim()) parts.push(n.notes.trim().slice(0, 120) + (n.notes.length > 120 ? '…' : ''));
+  return parts.join('\n') || 'Click to add operational note';
+}
+
+function teamIcon(team) {
+  return { red:'🔴', purple:'🟣', blue:'🔵' }[team] || '';
+}
+
+function highlightCard(id) {
+  document.querySelectorAll('.card').forEach(c => c.classList.toggle('active-card', c.dataset.id === id));
+}
+
+function updateStats() {
+  const counts = { blocked:0, detected:0, tested:0, missed:0, inprogress:0};
+  let noted = 0;
+  const ids = collectUniqueTTPs();
+  ids.forEach(id => {
+    const n = notes[id];
+    const s = n?.status;
+    if (counts[s] !== undefined) counts[s]++;
+    if (n?.notes?.trim()) noted++;
+  });
+  const total = ids.size;
+  const parents = [...ids].filter(id => !id.includes('.')).length;
+  const subs = total - parents;
+  Object.keys(counts).forEach(k => document.getElementById(`n-${k}`).textContent = counts[k]);
+  const done = Object.values(counts).reduce((a, b) => a + b, 0);
+  const pct = total ? Math.round(done / total * 100) : 0;
+  document.getElementById('pbar').innerHTML = Object.entries(counts)
+    .filter(([, v]) => v)
+    .map(([k, v]) => `<div class="pseg" style="width:${v/total*100}%;background:${STATUS_COLORS[k]}"></div>`).join('');
+  document.getElementById('ppct').textContent = `${pct}% assessed · ${noted} notes`;
+  document.getElementById('ttpTotal').textContent =
+    `${total} TTPs (${parents} techniques + ${subs} sub-techniques) · Red = executed · Blue = detected · Green = blocked`;
+}
+
+// ── Drawer ─────────────────────────────────────────────────────────────
+function openDrawer(t, tacName) {
+  currentTech = t;
+  currentTacName = tacName;
+
+  document.getElementById('dId').textContent = t.id;
+  document.getElementById('dName').textContent = t.name;
+  document.getElementById('dTactic').textContent = tacName;
+
+  const n = notes[t.id] || {};
+  document.getElementById('assignee').value = n.assignee || '';
+  document.getElementById('noteText').value = n.notes || '';
+  currentTags = [...(n.tags || [])];
+  currentTeam = n.team || '';
+  renderTags();
+  pickStatus(n.status || 'none');
+  pickTeam(currentTeam);
+  updateNoteMeta(n.updatedAt);
+
+  switchTab('detail', document.querySelector('.dtab[data-tab="detail"]'));
+
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawerBackdrop').classList.add('open');
+  document.getElementById('matrixWrap').classList.add('drawer-open');
+  highlightCard(t.id);
+  loadDetail(t.id);
+}
+
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawerBackdrop').classList.remove('open');
+  document.getElementById('matrixWrap').classList.remove('drawer-open');
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('active-card'));
+  currentTech = null;
+}
+
+function switchTab(name, el) {
+  document.querySelectorAll('.dtab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.dpanel').forEach(p => p.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.getElementById(`panel-${name}`).classList.add('active');
+}
+
+function updateNoteMeta(updatedAt) {
+  const el = document.getElementById('noteMeta');
+  if (updatedAt) {
+    el.textContent = `Last saved: ${new Date(updatedAt).toLocaleString()}`;
+    el.classList.remove('hidden');
+  } else {
+    el.classList.add('hidden');
+  }
+}
+
+async function loadDetail(id) {
+  const content = document.getElementById('detailContent');
+  content.innerHTML = '<div class="detail-loading"><div class="spinner-sm"></div> Loading…</div>';
+
+  try {
+    const r = await apiFetch(`/api/mitre/${id}`);
+    if (!r.ok) throw new Error(r.status);
+    const d = await r.json();
+
+    const link = document.getElementById('dLink');
+    if (d.url) { link.href = d.url; link.classList.remove('hidden'); }
+    else link.classList.add('hidden');
+
+    let html = '';
+    if (d.isSub && d.parentTechnique) {
+      html += `<div class="detail-section"><div class="sec-label">Parent Technique</div>
+        <div class="sub-item" onclick="openSubTechnique('${escAttr(d.parentTechnique.id)}','${escAttr(d.parentTechnique.name)}')">
+          <span class="sub-id">${escHtml(d.parentTechnique.id)}</span>
+          <span class="sub-name">${escHtml(d.parentTechnique.name)}</span>
+        </div></div>`;
+    }
+    if (d.description) {
+      html += `<div class="detail-section"><div class="sec-label">Description</div><div class="desc-text">${escHtml(d.description)}</div></div>`;
+    }
+    if (d.platforms?.length) {
+      html += `<div class="detail-section"><div class="sec-label">Platforms</div><div class="platform-list">${d.platforms.map(p => `<span class="platform-tag">${escHtml(p)}</span>`).join('')}</div></div>`;
+    }
+    if (d.subTechniques?.length) {
+      html += `<div class="detail-section"><div class="sec-label">Sub-Techniques (${d.subTechniques.length})</div><div class="sub-list">${d.subTechniques.map(s => {
+        const sn = notes[s.id] || {};
+        const st = sn.status || 'none';
+        const dot = st !== 'none' ? `<span class="sub-status" style="background:${STATUS_COLORS[st] || 'var(--border)'}"></span>` : '';
+        return `<div class="sub-item" onclick="openSubTechnique('${escAttr(s.id)}','${escAttr(s.name)}')">
+          <span class="sub-id">${escHtml(s.id)}</span>
+          <span class="sub-name">${escHtml(s.name)}</span>${dot}
+        </div>`;
+      }).join('')}</div></div>`;
+    }
+    content.innerHTML = html || '<div class="detail-loading">No detail available.</div>';
+  } catch (e) {
+    content.innerHTML = `<div class="detail-loading" style="color:var(--missed)">Failed to load (${e.message})</div>`;
+  }
+}
+
+function openSubTechnique(id, name) {
+  let tacName = currentTacName;
+  for (const tac of TACTICS) {
+    const found = tac.techniques.find(t => t.id === id);
+    if (found) { tacName = tac.name; openDrawer(found, tacName); return; }
+  }
+  openDrawer({ id, name, isSub: true }, tacName);
+}
+
+function renderTags() {
+  document.getElementById('tagsList').innerHTML = currentTags.map((t, i) =>
+    `<span class="tag">${escHtml(t)}<span class="tag-x" onclick="event.stopPropagation();removeTag(${i})">×</span></span>`
+  ).join('');
+}
+
+function tagKey(e) {
+  const inp = e.target;
+  if (e.key === 'Enter' || e.key === ',') {
+    e.preventDefault();
+    const v = inp.value.trim().replace(/,$/,'');
+    if (v && !currentTags.includes(v)) { currentTags.push(v); renderTags(); }
+    inp.value = '';
+  } else if (e.key === 'Backspace' && !inp.value && currentTags.length) {
+    currentTags.pop(); renderTags();
+  }
+}
+
+function removeTag(i) { currentTags.splice(i, 1); renderTags(); }
+
+function pickStatus(s) {
+  document.querySelectorAll('.sopt').forEach(el => el.classList.toggle('sel', el.dataset.s === s));
+}
+
+function pickTeam(team) {
+  currentTeam = team;
+  document.querySelectorAll('.team-opt').forEach(el => el.classList.toggle('sel', el.dataset.team === team));
+}
+
+function getSelectedStatus() {
+  return document.querySelector('.sopt.sel')?.dataset.s || 'none';
+}
+
+async function saveNote() {
+  if (!currentTech) return;
+  const data = {
+    status:   getSelectedStatus(),
+    team:     currentTeam,
+    assignee: document.getElementById('assignee').value.trim(),
+    tags:     currentTags,
+    notes:    document.getElementById('noteText').value
+  };
+  notes[currentTech.id] = { ...data, updatedAt: new Date().toISOString() };
+  await saveNoteToServer(currentTech.id, data);
+  renderMatrix();
+  updateStats();
+  updateNoteMeta(notes[currentTech.id].updatedAt);
+  showToast('✓ Saved — matrix updated');
+}
+
+function setFilter(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderMatrix();
+}
+
+document.getElementById('searchInput').addEventListener('input', renderMatrix);
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(notes, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `mitre-ops-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  showToast('⬇ Exported');
+}
+
+function clearAll() {
+  if (!confirm('Clear all notes and statuses? This cannot be undone.')) return;
+  notes = {};
+  apiFetch('/api/notes', {method:'DELETE'}).catch(() => {});
+  renderMatrix();
+  updateStats();
+  showToast('✕ Cleared');
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escAttr(s) {
+  return String(s).replace(/'/g,"\\'").replace(/"/g,'&quot;');
+}
+
+boot();
+</script>
+</body>
+</html>

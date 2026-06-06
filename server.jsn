@@ -1,0 +1,91 @@
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const https = require('https');
+
+const app = express();
+const DATA_FILE = path.join(__dirname, 'data', 'notes.json');
+const LOCAL_MITRE = path.join(__dirname, 'data', 'enterprise-attack.json');
+
+app.use(express.json());
+app.use(express.static('public'));
+
+if (!fs.existsSync(path.join(__dirname, 'data'))) fs.mkdirSync(path.join(__dirname, 'data'));
+if (!fs.existsSync(DATA_FILE)) fs.writeFileSync(DATA_FILE, '{}');
+
+const read = () => JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+const write = (d) => fs.writeFileSync(DATA_FILE, JSON.stringify(d, null, 2));
+
+app.get('/api/notes', (_, res) => res.json(read()));
+app.put('/api/notes/:id', (req, res) => {
+  const notes = read();
+  notes[req.params.id] = { ...req.body, updatedAt: new Date().toISOString() };
+  write(notes);
+  res.json(notes[req.params.id]);
+});
+app.delete('/api/notes', (_, res) => { write({}); res.json({ ok: true }); });
+
+// ── MITRE ──────────────────────────────────────────────────────────────
+const FALLBACK = [
+  { id:'TA0001', name:'Initial Access',        techniques:[{id:'T1190',name:'Exploit Public-Facing Application'},{id:'T1566',name:'Phishing'},{id:'T1078',name:'Valid Accounts'}]},
+  { id:'TA0002', name:'Execution',             techniques:[{id:'T1059',name:'Command and Scripting Interpreter'},{id:'T1203',name:'Exploitation for Client Execution'}]},
+  { id:'TA0003', name:'Persistence',           techniques:[{id:'T1098',name:'Account Manipulation'},{id:'T1053',name:'Scheduled Task/Job'},{id:'T1136',name:'Create Account'}]},
+  { id:'TA0004', name:'Privilege Escalation',  techniques:[{id:'T1068',name:'Exploitation for Privilege Escalation'},{id:'T1055',name:'Process Injection'}]},
+  { id:'TA0005', name:'Defense Evasion',       techniques:[{id:'T1562',name:'Impair Defenses'},{id:'T1036',name:'Masquerading'},{id:'T1027',name:'Obfuscated Files or Information'}]},
+  { id:'TA0006', name:'Credential Access',     techniques:[{id:'T1110',name:'Brute Force'},{id:'T1003',name:'OS Credential Dumping'}]},
+  { id:'TA0007', name:'Discovery',             techniques:[{id:'T1087',name:'Account Discovery'},{id:'T1083',name:'File and Directory Discovery'},{id:'T1046',name:'Network Service Discovery'}]},
+  { id:'TA0008', name:'Lateral Movement',      techniques:[{id:'T1021',name:'Remote Services'},{id:'T1210',name:'Exploitation of Remote Services'}]},
+  { id:'TA0009', name:'Collection',            techniques:[{id:'T1005',name:'Data from Local System'},{id:'T1114',name:'Email Collection'}]},
+  { id:'TA0010', name:'Exfiltration',          techniques:[{id:'T1041',name:'Exfiltration Over C2 Channel'},{id:'T1048',name:'Exfiltration Over Alternative Protocol'}]},
+  { id:'TA0011', name:'Command and Control',   techniques:[{id:'T1071',name:'Application Layer Protocol'},{id:'T1573',name:'Encrypted Channel'}]},
+  { id:'TA0040', name:'Impact',                techniques:[{id:'T1486',name:'Data Encrypted for Impact'},{id:'T1485',name:'Data Destruction'}]},
+];
+
+function parseMitre(raw) {
+  const tactics = {};
+  raw.objects.forEach(o => {
+    if (o.type === 'x-mitre-tactic') {
+      const id = o.external_references?.find(r => r.source_name === 'mitre-attack')?.external_id;
+      tactics[o.x_mitre_shortname] = { id, name: o.name, techniques: [] };
+    }
+  });
+  raw.objects.forEach(o => {
+    if (o.type === 'attack-pattern' && !o.x_mitre_deprecated && !o.revoked) {
+      const id = o.external_references?.find(r => r.source_name === 'mitre-attack')?.external_id;
+      if (!id || id.includes('.')) return;
+      o.kill_chain_phases?.forEach(kc => {
+        if (tactics[kc.phase_name]) tactics[kc.phase_name].techniques.push({ id, name: o.name });
+      });
+    }
+  });
+  return Object.values(tactics).sort((a, b) => a.id.localeCompare(b.id));
+}
+
+let mitreCache = null;
+
+app.get('/api/mitre', async (_, res) => {
+  if (mitreCache) return res.json(mitreCache);
+
+  // 1. GitHub
+  try {
+    const data = await new Promise((resolve, reject) => {
+      https.get('https://raw.githubusercontent.com/mitre/cti/master/enterprise-attack/enterprise-attack.json', r => {
+        if (r.statusCode !== 200) return reject(new Error(`HTTP ${r.statusCode}`));
+        let s = ''; r.on('data', c => s += c); r.on('end', () => resolve(JSON.parse(s)));
+      }).on('error', reject);
+    });
+    mitreCache = { data: parseMitre(data), source: 'github' };
+  } catch {
+    // 2. فایل محلی
+    try {
+      mitreCache = { data: parseMitre(JSON.parse(fs.readFileSync(LOCAL_MITRE, 'utf8'))), source: 'local' };
+    } catch {
+      // 3. fallback
+      mitreCache = { data: FALLBACK, source: 'fallback' };
+    }
+  }
+
+  res.json(mitreCache);
+});
+
+app.listen(3000, () => console.log('http://0.0.0.0:3000'));

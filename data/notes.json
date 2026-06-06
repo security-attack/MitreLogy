@@ -1,0 +1,18 @@
+{
+  "T1595": {
+    "status": "none",
+    "team": "",
+    "assignee": "",
+    "tags": [],
+    "notes": "Yara rule done",
+    "updatedAt": "2026-06-06T09:14:04.377Z"
+  },
+  "T1547.001": {
+    "status": "none",
+    "team": "",
+    "assignee": "1",
+    "tags": [],
+    "notes": "",
+    "updatedAt": "2026-06-06T09:17:29.835Z"
+  }
+}
