@@ -55,7 +55,7 @@ Built for teams who want a private, offline-friendly alternative to MITRE Naviga
 
 ```bash
 git clone <your-repo-url>
-cd Mitre-Tamin
+cd MitreLogy
 npm install
 npm start
 ```
